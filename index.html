@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Spanish Body Parts Speaking Practice</title>
+  <style>
+    :root{
+      color-scheme:light dark;
+      --bg:#f5f7fb;--card:#fff;--text:#16181d;--muted:#6b7280;--border:#d9dee8;
+      --accent:#2563eb;--accentText:#fff;--good:#218838;--goodBg:#eaf8ee;--bad:#c62828;--badBg:#fdecec;
+      --listen:#fff5d6;
+    }
+    @media(prefers-color-scheme:dark){:root{--bg:#0f1115;--card:#181b21;--text:#f5f7fa;--muted:#aab0ba;--border:#343a46;--accent:#5b8cff;--good:#62d67c;--goodBg:#15351e;--bad:#ff7b7b;--badBg:#421919;--listen:#3a3114}}
+    *{box-sizing:border-box} body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;background:var(--bg);color:var(--text)}
+    main{max-width:700px;margin:0 auto;padding:20px 16px 40px} h1{margin:0 0 5px;font-size:26px} .sub{margin:0 0 18px;color:var(--muted)}
+    .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:12px}.stat{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:10px;text-align:center}.stat small{display:block;color:var(--muted);margin-bottom:4px}.stat strong{font-size:21px}
+    .bar{height:10px;background:var(--border);border-radius:999px;overflow:hidden;margin-bottom:16px}.bar>div{height:100%;width:0;background:var(--accent);transition:width .2s ease}
+    .card{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:22px 18px;text-align:center}.eyebrow{font-size:14px;color:var(--muted);margin-bottom:8px}#englishWord{font-size:42px;font-weight:800;margin:8px 0 22px;text-transform:lowercase}
+    button{font:inherit;border-radius:14px;border:1px solid var(--border);background:var(--card);color:var(--text);min-height:48px;padding:11px 15px;cursor:pointer}button:disabled{opacity:.45;cursor:not-allowed}
+    #speakBtn{width:100%;border:0;background:var(--accent);color:var(--accentText);font-size:18px;font-weight:700;min-height:60px}#speakBtn.listening{background:#d97706;color:#fff}
+    .result{margin-top:16px;border-radius:14px;padding:13px;min-height:74px;display:flex;flex-direction:column;justify-content:center;gap:4px}.result.neutral{border:1px dashed var(--border);color:var(--muted)}.result.listening{background:var(--listen);border:1px solid #d8a300}.result.good{background:var(--goodBg);border:1px solid var(--good);color:var(--good)}.result.bad{background:var(--badBg);border:1px solid var(--bad);color:var(--bad)}#resultTitle{font-weight:800;font-size:18px}#heard{font-size:14px}
+    #answerBox{display:none;margin-top:14px;padding:14px;border-radius:14px;border:1px solid var(--border);background:var(--bg)}#answerSpanish{font-size:27px;font-weight:800;margin:4px 0 10px}.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}.note{margin-top:16px;color:var(--muted);font-size:13px;line-height:1.45}.warning{display:none;margin:0 0 14px;padding:12px;border-radius:12px;background:var(--badBg);border:1px solid var(--bad);color:var(--bad);text-align:left}
+    @media(max-width:430px){#englishWord{font-size:36px}.grid2{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+<main>
+  <h1>Spanish Body Parts — Speaking Practice</h1>
+  <p class="sub">See the English word, tap the microphone, and say it in Spanish.</p>
+
+  <div id="warning" class="warning"></div>
+
+  <div class="stats">
+    <div class="stat"><small>Progress</small><strong id="progress">0/10</strong></div>
+    <div class="stat"><small>Correct</small><strong id="correct">0</strong></div>
+    <div class="stat"><small>Mistakes</small><strong id="mistakes">0</strong></div>
+  </div>
+  <div class="bar"><div id="barFill"></div></div>
+
+  <section class="card">
+    <div class="eyebrow">Say this in Spanish</div>
+    <div id="englishWord">head</div>
+
+    <button id="speakBtn" type="button">🎤 Speak Spanish</button>
+
+    <div id="resultBox" class="result neutral" aria-live="polite">
+      <div id="resultTitle">Tap the microphone when you're ready.</div>
+      <div id="heard"></div>
+    </div>
+
+    <div id="answerBox">
+      <div class="eyebrow">Correct Spanish</div>
+      <div id="answerSpanish">La cabeza</div>
+      <button id="playAnswerBtn" type="button">🔊 Hear answer at 0.75×</button>
+    </div>
+
+    <div class="grid2">
+      <button id="showAnswerBtn" type="button">Show answer</button>
+      <button id="nextBtn" type="button" disabled>Next →</button>
+    </div>
+  </section>
+
+  <div class="grid2">
+    <button id="restartBtn" type="button">Restart</button>
+    <button id="shuffleBtn" type="button">Shuffle & Restart</button>
+  </div>
+
+  <p class="note">For best results on iPhone, open this page in Safari. The first time you tap the microphone, allow microphone/speech-recognition access if prompted. A wrong answer does not block you from retrying the same word.</p>
+</main>
+
+<script>
+  const WORDS=[
+    {english:'head',display:'La cabeza',accepted:['la cabeza','cabeza']},
+    {english:'mouth',display:'La boca',accepted:['la boca','boca']},
+    {english:'eye',display:'El ojo',accepted:['el ojo','ojo']},
+    {english:'nose',display:'La nariz',accepted:['la nariz','nariz']},
+    {english:'ear',display:'La oreja',accepted:['la oreja','oreja']},
+    {english:'hand',display:'La mano',accepted:['la mano','mano']},
+    {english:'finger',display:'El dedo',accepted:['el dedo','dedo']},
+    {english:'arm',display:'El brazo',accepted:['el brazo','brazo']},
+    {english:'leg',display:'La pierna',accepted:['la pierna','pierna']},
+    {english:'foot',display:'El pie',accepted:['el pie','pie']}
+  ];
+
+  const Recognition=window.SpeechRecognition||window.webkitSpeechRecognition;
+  const $=id=>document.getElementById(id);
+  const englishWord=$('englishWord'),speakBtn=$('speakBtn'),resultBox=$('resultBox'),resultTitle=$('resultTitle'),heard=$('heard'),answerBox=$('answerBox'),answerSpanish=$('answerSpanish'),playAnswerBtn=$('playAnswerBtn'),showAnswerBtn=$('showAnswerBtn'),nextBtn=$('nextBtn'),restartBtn=$('restartBtn'),shuffleBtn=$('shuffleBtn'),progressEl=$('progress'),correctEl=$('correct'),mistakesEl=$('mistakes'),barFill=$('barFill'),warning=$('warning');
+
+  let deck=[...WORDS],index=0,correct=0,mistakes=0,listening=false,recognition=null,solved=false;
+
+  function norm(s){return s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[¿?¡!.,;:]/g,'').replace(/\s+/g,' ').trim()}
+  function shuffle(a){a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+  function current(){return deck[index]}
+  function setResult(type,title,sub=''){resultBox.className='result '+type;resultTitle.textContent=title;heard.textContent=sub}
+  function isRight(t,w){const n=norm(t);return w.accepted.some(a=>norm(a)===n)}
+  function updateStats(){progressEl.textContent=Math.min(index,deck.length)+'/'+deck.length;correctEl.textContent=correct;mistakesEl.textContent=mistakes;barFill.style.width=Math.round((Math.min(index,deck.length)/deck.length)*100)+'%'}
+
+  function render(){
+    if(index>=deck.length){finish();return}
+    const w=current();englishWord.textContent=w.english;answerSpanish.textContent=w.display;answerBox.style.display='none';showAnswerBtn.textContent='Show answer';showAnswerBtn.disabled=false;nextBtn.disabled=true;solved=false;setResult('neutral',"Tap the microphone when you're ready.",'');updateStats();
+  }
+
+  function finish(){englishWord.textContent='Finished!';speakBtn.disabled=true;showAnswerBtn.disabled=true;nextBtn.disabled=true;answerBox.style.display='none';barFill.style.width='100%';progressEl.textContent=deck.length+'/'+deck.length;setResult('good','Great job!',correct+'/'+deck.length+' words completed with '+mistakes+' mistake'+(mistakes===1?'':'s')+'.')}
+
+  function speakAnswer(){if(!('speechSynthesis' in window)||index>=deck.length)return;speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(current().display);u.lang='es-ES';u.rate=.75;u.pitch=1;speechSynthesis.speak(u)}
+
+  function startListening(){
+    if(!Recognition||listening||index>=deck.length)return;
+    recognition=new Recognition();recognition.lang='es-US';recognition.interimResults=false;recognition.maxAlternatives=5;recognition.continuous=false;
+    recognition.onstart=()=>{listening=true;speakBtn.classList.add('listening');speakBtn.textContent='🎤 Listening…';setResult('listening','Listening…','Say the Spanish word now.')};
+    recognition.onresult=e=>{
+      const alts=[];for(let i=0;i<e.results[0].length;i++)alts.push(e.results[0][i].transcript);
+      const w=current(),match=alts.find(t=>isRight(t,w)),best=alts[0]||'';
+      if(match){if(!solved){correct++;solved=true}setResult('good','✓ Correct!','I heard: “'+match+'”');answerBox.style.display='block';showAnswerBtn.textContent='Hide answer';nextBtn.disabled=false;updateStats()}
+      else{mistakes++;setResult('bad','✗ Try again','I heard: “'+best+'”');answerBox.style.display='none';nextBtn.disabled=true;updateStats()}
+    };
+    recognition.onerror=e=>{let msg='I could not understand that. Tap the microphone and try again.';if(e.error==='not-allowed'||e.error==='service-not-allowed')msg='Microphone or speech-recognition permission was blocked. In Safari, allow microphone access for this site and try again.';else if(e.error==='no-speech')msg='I did not hear speech. Tap the microphone and try again.';else if(e.error==='network')msg='Speech recognition could not connect. Check your connection and try again.';setResult('bad','Could not check that',msg)};
+    recognition.onend=()=>{listening=false;speakBtn.classList.remove('listening');speakBtn.textContent='🎤 Speak Spanish'};
+    try{recognition.start()}catch(e){setResult('bad','Could not start listening','Tap the microphone again.')}
+  }
+
+  function reset(doShuffle){if(recognition&&listening)recognition.stop();if('speechSynthesis' in window)speechSynthesis.cancel();deck=doShuffle?shuffle(WORDS):[...WORDS];index=0;correct=0;mistakes=0;speakBtn.disabled=!Recognition;render()}
+
+  speakBtn.addEventListener('click',startListening);
+  showAnswerBtn.addEventListener('click',()=>{const open=answerBox.style.display==='block';answerBox.style.display=open?'none':'block';showAnswerBtn.textContent=open?'Show answer':'Hide answer'});
+  playAnswerBtn.addEventListener('click',speakAnswer);
+  nextBtn.addEventListener('click',()=>{index++;render()});
+  restartBtn.addEventListener('click',()=>reset(false));
+  shuffleBtn.addEventListener('click',()=>reset(true));
+
+  if(!Recognition){warning.style.display='block';warning.textContent='This browser does not expose speech recognition. Open the published site in Safari or Chrome instead of an in-app browser.';speakBtn.disabled=true}
+  render();
+</script>
+</body>
+</html>
