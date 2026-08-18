@@ -20,3 +20,81 @@ window.PMP_QUESTIONS=(window.PMP_QUESTIONS||[]).concat([
 {"id":19,"type":"match","title":"Scope Issues","domain":"Process","prompt":"Match each scope statement to the term from the transcript.","pairs":[{"left":"The approved version of a scope statement, the work breakdown structure and its associated WBS dictionary.","right":"Scope baseline"},{"left":"Going above and beyond in the scope when it's not required.","right":"Gold plating"},{"left":"Uncontrolled increase in scope.","right":"Scope creep"},{"left":"A description of the project and the project scope and major deliverables.","right":"Scope statement"},{"left":"The launch date is pushed out because our stakeholder kept adding features.","right":"Done drift"}],"explanation":"Transcript answers: scope baseline, gold plating, scope creep, scope statement, and done drift."},
 {"id":20,"type":"match","title":"Agile Frameworks","domain":"Process","prompt":"Match each statement to the agile framework from the transcript.","pairs":[{"left":"The organization applies Scrum ways of working to programs and portfolios.","right":"Large Scale Scrum"},{"left":"The company focuses on organizing project teams around value streams.","right":"SAFe — Scaled Agile Framework"},{"left":"A small team uses a framework that emphasizes iterative development, real customer involvement and shared code.","right":"Extreme Programming"},{"left":"Constraint-driven delivery.","right":"DSDM — Dynamic Systems Development Method"}],"explanation":"Transcript answers: Large Scale Scrum, SAFe, Extreme Programming, and DSDM."}
 ]);
+
+/* Casual-access password gate for the static GitHub Pages site. */
+(function(){
+  const SESSION_KEY='pmpAuthUnlocked_v1';
+  const EXPECTED_HASH='ca0df2c95aa144c1d0ff2ff3c8f967fdc1de9ef0c4120b3726416701b519d619';
+  const app=document.querySelector('.wrap');
+  if(!app)return;
+
+  function reveal(){
+    app.style.visibility='visible';
+    const gate=document.getElementById('pmpAuthGate');
+    if(gate)gate.remove();
+  }
+
+  if(sessionStorage.getItem(SESSION_KEY)==='1'){
+    reveal();
+    return;
+  }
+
+  app.style.visibility='hidden';
+  const gate=document.createElement('div');
+  gate.id='pmpAuthGate';
+  gate.innerHTML=`
+    <div class="pmpAuthCard">
+      <div class="pmpAuthPill">PMP Practice</div>
+      <h1>Enter password</h1>
+      <p>Enter the shared password to continue.</p>
+      <form id="pmpAuthForm">
+        <input id="pmpAuthInput" type="password" autocomplete="current-password" inputmode="text" autocapitalize="none" spellcheck="false" placeholder="Password" aria-label="Password">
+        <button type="submit">Continue</button>
+      </form>
+      <div id="pmpAuthError" role="alert" aria-live="polite"></div>
+    </div>`;
+
+  const style=document.createElement('style');
+  style.textContent=`
+    #pmpAuthGate{position:fixed;inset:0;z-index:2147483647;background:#08101f;display:flex;align-items:center;justify-content:center;padding:20px;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#eef3ff}
+    .pmpAuthCard{width:min(100%,430px);background:#121c33;border:1px solid #293754;border-radius:20px;padding:32px 24px;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.35)}
+    .pmpAuthPill{display:inline-block;font-size:12px;padding:6px 10px;border-radius:999px;background:#202e4b;color:#c7d5ef;margin-bottom:10px}
+    .pmpAuthCard h1{font-size:30px;margin:8px 0 8px;letter-spacing:-.02em}
+    .pmpAuthCard p{color:#9fb0cf;line-height:1.5;margin:0 0 20px}
+    #pmpAuthForm{display:grid;gap:11px}
+    #pmpAuthInput{width:100%;border:1px solid #40547a;background:#0d172a;color:#fff;border-radius:12px;padding:14px 15px;font-size:18px;outline:none}
+    #pmpAuthInput:focus{border-color:#67cfff;box-shadow:0 0 0 2px rgba(103,207,255,.16)}
+    #pmpAuthForm button{border:0;background:#7257ff;color:#fff;border-radius:12px;padding:14px 16px;font-size:17px;font-weight:800;cursor:pointer}
+    #pmpAuthError{min-height:22px;margin-top:10px;color:#ff8a99;font-size:14px}
+  `;
+  document.head.appendChild(style);
+  document.body.appendChild(gate);
+
+  async function sha256(value){
+    const bytes=new TextEncoder().encode(value);
+    const digest=await crypto.subtle.digest('SHA-256',bytes);
+    return Array.from(new Uint8Array(digest)).map(b=>b.toString(16).padStart(2,'0')).join('');
+  }
+
+  const form=document.getElementById('pmpAuthForm');
+  const input=document.getElementById('pmpAuthInput');
+  const error=document.getElementById('pmpAuthError');
+  form.addEventListener('submit',async function(e){
+    e.preventDefault();
+    error.textContent='';
+    try{
+      const entered=await sha256(input.value);
+      if(entered===EXPECTED_HASH){
+        sessionStorage.setItem(SESSION_KEY,'1');
+        reveal();
+      }else{
+        input.value='';
+        error.textContent='Incorrect password.';
+        input.focus();
+      }
+    }catch(err){
+      error.textContent='Unable to verify the password in this browser.';
+    }
+  });
+  setTimeout(()=>input.focus(),50);
+})();
