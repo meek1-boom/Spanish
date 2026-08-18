@@ -13,17 +13,15 @@
     function syncHeader(){
       header.style.display=setupScreenVisible()?'none':'';
       const footer=document.querySelector('.appVersionFooter');
-      if(footer)footer.textContent='PMP Practice v1.7';
+      if(footer)footer.textContent='PMP Practice v1.8';
     }
 
-    // Watch the setup screens because the app swaps them by adding/removing .hidden.
     const observer=new MutationObserver(syncHeader);
     setupIds.forEach(id=>{
       const el=document.getElementById(id);
       if(el)observer.observe(el,{attributes:true,attributeFilter:['class']});
     });
 
-    // Also wrap the central screen switcher when available.
     if(typeof window.showOnly==='function'&&!window.__pmpHeaderV17Wrapped){
       const previous=window.showOnly;
       window.showOnly=function(id){
