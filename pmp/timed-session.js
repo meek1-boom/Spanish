@@ -7,7 +7,7 @@
     }
     window.__pmpTimedSessionInstalled=true;
 
-    const COUNTS=[10,20,40,60,80,100];
+    const COUNTS=[3,5,10,15,20,40,60,80,100];
     let selectedCount=null;
     let timedActive=false;
     let sessionIds=[];
@@ -37,7 +37,6 @@
       .questionCountGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
       .questionCountBtn{border:1px solid #40547a;background:#1b2a49;color:white;border-radius:11px;padding:12px 8px;font-size:17px;font-weight:800;cursor:pointer}
       .questionCountBtn.selected{outline:2px solid #67cfff;background:#21345b}
-      .questionCountBtn:disabled{opacity:.3;cursor:not-allowed}
       #startBtn:disabled{opacity:.4;cursor:not-allowed}
       .sessionResultsGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;max-width:620px;margin:20px auto}
       .sessionMetric{background:#0d172a;border:1px solid #334563;border-radius:13px;padding:15px 10px}
@@ -131,26 +130,28 @@
         return;
       }
 
-      let choices=COUNTS.filter(n=>n<=available);
-      const useAllAvailable=choices.length===0;
-      if(useAllAvailable)choices=[available];
+      const choices=COUNTS.filter(n=>n<=available);
+      const exactMatch=COUNTS.includes(available);
+      const buttons=choices.map(n=>({count:n,label:String(n)}));
+      if(!exactMatch)buttons.push({count:available,label:`All ${available}`});
+      if(!buttons.length)buttons.push({count:available,label:`All ${available}`});
 
-      grid.innerHTML=choices.map(n=>`<button type="button" class="questionCountBtn${useAllAvailable?' selected':''}" data-count="${n}">${useAllAvailable?`All ${n}`:n}</button>`).join('');
+      grid.innerHTML=buttons.map(x=>`<button type="button" class="questionCountBtn" data-count="${x.count}">${x.label}</button>`).join('');
+      start.disabled=true;
+      note.textContent=`${available} questions are available for this question type/domain. Choose a session length.`;
 
-      if(useAllAvailable){
-        selectedCount=available;
+      if(buttons.length===1){
+        selectedCount=buttons[0].count;
+        grid.firstElementChild.classList.add('selected');
         start.disabled=false;
         note.textContent=`All ${available} available questions will be used in this session.`;
-      }else{
-        start.disabled=true;
-        note.textContent=`${available} questions are available for this question type/domain. Choose a session length.`;
       }
 
       grid.querySelectorAll('.questionCountBtn').forEach(btn=>btn.addEventListener('click',()=>{
         selectedCount=Number(btn.dataset.count);
         grid.querySelectorAll('.questionCountBtn').forEach(x=>x.classList.toggle('selected',x===btn));
         start.disabled=false;
-        note.textContent=selectedCount===available&&available<10?`All ${available} available questions will be used in this session.`:`This session will contain ${selectedCount} questions.`;
+        note.textContent=selectedCount===available?`All ${available} available questions will be used in this session.`:`This session will contain ${selectedCount} questions.`;
       }));
     }
 
