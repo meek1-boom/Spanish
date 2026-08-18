@@ -7,6 +7,7 @@
     }
     window.__pmpTimedSessionInstalled=true;
 
+    const APP_VERSION='v1.5';
     const COUNTS=[3,5,10,15,20,40,60,80,100];
     let selectedCount=null;
     let timedActive=false;
@@ -44,6 +45,7 @@
       .sessionMetric b{font-size:25px;font-variant-numeric:tabular-nums}
       .sessionBreakdown{max-width:650px;margin:18px auto;text-align:left;border-top:1px solid #293754;padding-top:12px}
       .sessionBreakdownRow{display:flex;justify-content:space-between;gap:12px;padding:7px 2px;border-bottom:1px solid #23314b;color:#cbd7ec;font-size:14px}
+      .appVersionFooter{text-align:center;color:#60708f;font-size:12px;padding:24px 0 4px;letter-spacing:.02em}
       @media(max-width:620px){.questionCountGrid{grid-template-columns:repeat(2,1fr)}.sessionResultsGrid{grid-template-columns:1fr}.sessionTimerValue{font-size:18px}}
     `;
     document.head.appendChild(style);
@@ -79,6 +81,11 @@
       <button class="btn primary big" id="practiceAgainBtn">Practice Again</button><br>
       <button class="btn back" id="resultSetupBtn">Change Setup</button>`;
     wrap.appendChild(resultScreen);
+
+    const versionFooter=document.createElement('footer');
+    versionFooter.className='appVersionFooter';
+    versionFooter.textContent=`PMP Practice ${APP_VERSION}`;
+    wrap.appendChild(versionFooter);
 
     showOnly=function(id){
       oldShowOnly(id);
