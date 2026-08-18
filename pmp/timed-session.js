@@ -118,17 +118,39 @@
     function availableCount(){return pool(TYPE,DOMAIN).length}
 
     function renderCountPicker(){
-      selectedCount=null;
       const available=availableCount();
       const grid=document.getElementById('questionCountGrid');
-      grid.innerHTML=COUNTS.map(n=>`<button type="button" class="questionCountBtn" data-count="${n}" ${n>available?'disabled':''}>${n}</button>`).join('');
-      document.getElementById('questionCountNote').textContent=available<100?`${available} questions are available for this question type/domain. Larger session sizes are disabled.`:'Choose a session length to enable Start Practice.';
-      document.getElementById('startBtn').disabled=true;
-      grid.querySelectorAll('.questionCountBtn:not(:disabled)').forEach(btn=>btn.addEventListener('click',()=>{
+      const note=document.getElementById('questionCountNote');
+      const start=document.getElementById('startBtn');
+      selectedCount=null;
+
+      if(available<=0){
+        grid.innerHTML='';
+        note.textContent='No questions are available for this question type/domain.';
+        start.disabled=true;
+        return;
+      }
+
+      let choices=COUNTS.filter(n=>n<=available);
+      const useAllAvailable=choices.length===0;
+      if(useAllAvailable)choices=[available];
+
+      grid.innerHTML=choices.map(n=>`<button type="button" class="questionCountBtn${useAllAvailable?' selected':''}" data-count="${n}">${useAllAvailable?`All ${n}`:n}</button>`).join('');
+
+      if(useAllAvailable){
+        selectedCount=available;
+        start.disabled=false;
+        note.textContent=`All ${available} available questions will be used in this session.`;
+      }else{
+        start.disabled=true;
+        note.textContent=`${available} questions are available for this question type/domain. Choose a session length.`;
+      }
+
+      grid.querySelectorAll('.questionCountBtn').forEach(btn=>btn.addEventListener('click',()=>{
         selectedCount=Number(btn.dataset.count);
         grid.querySelectorAll('.questionCountBtn').forEach(x=>x.classList.toggle('selected',x===btn));
-        document.getElementById('startBtn').disabled=false;
-        document.getElementById('questionCountNote').textContent=`This session will contain ${selectedCount} questions.`;
+        start.disabled=false;
+        note.textContent=selectedCount===available&&available<10?`All ${available} available questions will be used in this session.`:`This session will contain ${selectedCount} questions.`;
       }));
     }
 
@@ -253,7 +275,7 @@
       document.getElementById('resultDetail').innerHTML=`<b>${correct} correct</b> out of <b>${total}</b> questions${answered<total?` • ${total-answered} unanswered`:''}.`;
       document.getElementById('resultBreakdown').innerHTML='<b>Time by question</b>'+sessionIds.map((uid,i)=>{
         const q=ITEM.get(uid),a=sessionAnswers[uid];
-        const label=q?(q.bank==='mcq'?'Multiple Choice':'Drag & Drop'):`Question ${i+1}`;
+        const label=q?(q.bank==='mcq'?`MCQ ${q.id}`:`D&D ${q.id}`):`Question ${i+1}`;
         return `<div class="sessionBreakdownRow"><span>${i+1}. ${label}</span><span>${a?fmt(a.timeMs):'Not answered'}</span></div>`;
       }).join('');
 
