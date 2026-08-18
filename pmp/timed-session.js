@@ -7,7 +7,7 @@
     }
     window.__pmpTimedSessionInstalled=true;
 
-    const APP_VERSION='v1.5';
+    const APP_VERSION='v1.6';
     const COUNTS=[3,5,10,15,20,40,60,80,100];
     let selectedCount=null;
     let timedActive=false;
@@ -20,6 +20,7 @@
 
     const oldShowOnly=showOnly;
     const oldShowStart=showStart;
+    const oldShowDomains=showDomains;
     const oldStartPractice=startPractice;
     const oldActiveIds=activeIds;
     const oldRenderCurrent=renderCurrent;
@@ -46,11 +47,14 @@
       .sessionBreakdown{max-width:650px;margin:18px auto;text-align:left;border-top:1px solid #293754;padding-top:12px}
       .sessionBreakdownRow{display:flex;justify-content:space-between;gap:12px;padding:7px 2px;border-bottom:1px solid #23314b;color:#cbd7ec;font-size:14px}
       .appVersionFooter{text-align:center;color:#60708f;font-size:12px;padding:24px 0 4px;letter-spacing:.02em}
+      .domainPct{display:inline-block;margin-left:9px;color:#67cfff;font-size:.72em;font-weight:800;vertical-align:middle}
       @media(max-width:620px){.questionCountGrid{grid-template-columns:repeat(2,1fr)}.sessionResultsGrid{grid-template-columns:1fr}.sessionTimerValue{font-size:18px}}
     `;
     document.head.appendChild(style);
 
     const header=document.querySelector('.top');
+    const progressWrap=document.querySelector('.bar');
+    if(progressWrap)progressWrap.style.display='none';
     const timerRow=document.createElement('div');
     timerRow.id='sessionTimerRow';
     timerRow.className='sessionTimerRow';
@@ -90,7 +94,30 @@
     showOnly=function(id){
       oldShowOnly(id);
       resultScreen.classList.toggle('hidden',id!=='sessionResultsScreen');
+      if(progressWrap)progressWrap.style.display=['startScreen','app','sessionResultsScreen'].includes(id)?'':'none';
     };
+
+    function domainStats(type,domain){
+      const questions=pool(type,domain);
+      const results=questions.map(q=>resultFor(q.uid)).filter(Boolean);
+      const correct=results.filter(r=>r&&r.correct).length;
+      return {total:questions.length,answered:results.length,score:results.length?Math.round(correct/results.length*100):0};
+    }
+
+    function decorateDomainChoices(){
+      document.querySelectorAll('.domainBtn').forEach(btn=>{
+        const domain=btn.dataset.domain;
+        const label=domain==='all'?'All Domains':domain;
+        const st=domainStats(TYPE,domain);
+        btn.innerHTML=`${esc(label)} <span class="domainPct">${st.score}%</span><small>${st.total} question${st.total===1?'':'s'}${st.answered?` • ${st.answered} answered`:''}</small>`;
+      });
+    }
+
+    showDomains=function(){
+      oldShowDomains();
+      decorateDomainChoices();
+    };
+    document.getElementById('startBack').onclick=showDomains;
 
     function fmt(ms){
       ms=Math.max(0,Math.floor(ms||0));
@@ -167,6 +194,7 @@
       stopTimerLoop();
       timerRow.style.display='none';
       oldShowStart();
+      if(progressWrap)progressWrap.style.display='';
       renderCountPicker();
     };
 
@@ -197,6 +225,7 @@
       currentTimedUid=null;
       timedActive=true;
       timerRow.style.display='grid';
+      if(progressWrap)progressWrap.style.display='';
       document.getElementById('shuffleBtn').disabled=true;
       document.getElementById('missedBtn').disabled=true;
       oldStartPractice();
