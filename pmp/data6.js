@@ -12,3 +12,4 @@ window.PMP_QUESTIONS=(window.PMP_QUESTIONS||[]).concat([
 ]);
 (function(){const s=document.createElement('script');s.src='timed-session.js?v=20260818';s.async=false;document.head.appendChild(s)})();
 (function(){const s=document.createElement('script');s.src='count-options.js?v=20260818e';s.async=false;document.head.appendChild(s)})();
+(function(){const s=document.createElement('script');s.src='ui-header-v17.js?v=1.7';s.async=false;document.head.appendChild(s)})();
