@@ -192,6 +192,11 @@
       oldRenderCurrent();
       if(!timedActive)return;
       const q=current();
+      const sourceNumber=document.getElementById('qNumber');
+      const sourceTitle=document.getElementById('qTitle');
+      const isMcq=!!(q&&q.bank==='mcq');
+      if(sourceNumber)sourceNumber.style.display=isMcq?'none':'';
+      if(sourceTitle)sourceTitle.style.display=isMcq?'none':'';
       if(q&&q.uid!==currentTimedUid){
         currentTimedUid=q.uid;
         questionStart=Date.now();
@@ -248,7 +253,7 @@
       document.getElementById('resultDetail').innerHTML=`<b>${correct} correct</b> out of <b>${total}</b> questions${answered<total?` • ${total-answered} unanswered`:''}.`;
       document.getElementById('resultBreakdown').innerHTML='<b>Time by question</b>'+sessionIds.map((uid,i)=>{
         const q=ITEM.get(uid),a=sessionAnswers[uid];
-        const label=q?(q.bank==='mcq'?`MCQ ${q.id}`:`D&D ${q.id}`):`Question ${i+1}`;
+        const label=q?(q.bank==='mcq'?'Multiple Choice':'Drag & Drop'):`Question ${i+1}`;
         return `<div class="sessionBreakdownRow"><span>${i+1}. ${label}</span><span>${a?fmt(a.timeMs):'Not answered'}</span></div>`;
       }).join('');
 
