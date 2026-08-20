@@ -7,6 +7,7 @@
 <style>
 :root{--bg:#08101f;--card:#121c33;--card2:#1b2a49;--line:#314563;--text:#eef3ff;--muted:#9fb0cf;--accent:#7257ff;--good:#35d58a;--bad:#ff687b}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}.wrap{max-width:900px;margin:auto;padding:18px 16px 70px}.hidden{display:none!important}.top{position:sticky;top:0;z-index:10;background:#08101fee;backdrop-filter:blur(12px);padding:10px 0 12px}.toprow,.stats,.meta,.actions,.controls,.choiceGrid{display:flex;gap:9px;align-items:center;flex-wrap:wrap}.toprow,.stats{justify-content:space-between}.toprow{font-size:12px;color:var(--muted);margin-bottom:7px}.bar{height:7px;background:#26334d;border-radius:99px;overflow:hidden}.bar i{display:block;height:100%;width:0;background:var(--accent);transition:width .2s}.stats{font-size:13px;color:#adbad3;margin-top:7px}.card{background:var(--card);border:1px solid #293754;border-radius:18px;padding:20px;margin:14px 0}.setup{text-align:center;padding:48px 20px}.setup h1{font-size:34px;letter-spacing:-.03em;margin:8px 0 10px}.setup h2{font-size:27px;margin:8px 0}.muted{color:var(--muted);line-height:1.55}.pill{display:inline-block;font-size:12px;padding:6px 9px;border-radius:999px;background:#202e4b;color:#c7d5ef}.btn{appearance:none;border:1px solid #40547a;background:var(--card2);color:white;border-radius:12px;padding:12px 14px;font-size:16px;cursor:pointer}.btn.primary{background:var(--accent);border-color:transparent;font-weight:800}.btn.big{padding:16px 25px;font-size:19px;min-width:210px}.btn.active{outline:2px solid #67cfff}.setupGrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;max-width:700px;margin:22px auto}.setupChoice{padding:22px 14px;font-size:20px;font-weight:800;min-height:94px}.setupChoice small{display:block;font-size:12px;font-weight:500;color:#b7c6e2;margin-top:7px}.summary{max-width:540px;margin:18px auto;padding:14px;border-radius:12px;background:#0d172a;color:#cbd7ec;line-height:1.55}.back{margin-top:12px}.controls{margin:14px 0}.controls .btn{font-size:14px}.question h2{font-size:24px;line-height:1.25;margin:10px 0}.questionText{font-size:17px;line-height:1.55;color:#e1e8f7}.meta{margin-bottom:8px}.bank{display:grid;gap:9px;margin:16px 0;padding:11px;border:1px dashed #40516f;border-radius:13px}.tile{background:#21304f;border:1px solid #40547a;border-radius:11px;padding:12px;cursor:pointer;user-select:none}.tile.sel{outline:2px solid #62c9ff}.row{display:grid;grid-template-columns:minmax(160px,.9fr) 1.2fr;gap:9px;margin:9px 0}.label,.drop,.bucket{border-radius:11px;padding:11px;border:1px solid #334563}.label{background:#0e172a;font-weight:700;line-height:1.35}.drop,.bucket{border-style:dashed;min-height:50px}.bucket{margin:9px 0}.mcq{display:grid;gap:10px;margin-top:17px}.option{width:100%;text-align:left;background:#1b2946;border:1px solid #40547a;border-radius:13px;color:white;padding:14px 15px;font-size:16px;line-height:1.4;cursor:pointer}.option:hover,.option.selected{border-color:#68caff}.option.correct{border-color:var(--good);background:#15382f}.option.wrong{border-color:var(--bad);background:#3b202b}.letter{display:inline-flex;width:28px;height:28px;align-items:center;justify-content:center;border-radius:8px;background:#0e172a;font-weight:800;margin-right:9px}.feedback{margin-top:15px;padding:14px;border-radius:12px;background:#0e172a;border:1px solid #334563;line-height:1.55}.feedback.ok{border-color:var(--good)}.feedback.bad{border-color:var(--bad)}.solution{margin-top:9px;color:#dce5f5}.note{font-size:12px;color:#8799ba;margin:10px 0}.profileStat{font-size:12px!important;color:#b7c6e2!important}.empty{padding:28px;text-align:center;color:var(--muted)}
+.syncForm{display:grid;gap:10px;max-width:430px;margin:22px auto 8px}.field{width:100%;border:1px solid #40547a;background:#0d172a;color:var(--text);border-radius:12px;padding:13px 14px;font:inherit}.syncStatus{min-height:20px;font-size:13px;color:#b7c6e2}.syncStatus.bad{color:#ff9bad}.syncStatus.ok{color:#65e0a3}
 @media(max-width:620px){.wrap{padding:12px 12px 60px}.setup{padding:38px 14px}.setupGrid{grid-template-columns:1fr}.row{grid-template-columns:1fr}.controls{display:grid;grid-template-columns:1fr 1fr}.controls .wide{grid-column:1/-1}.tile,.option,.btn{min-height:46px}.question h2{font-size:21px}}
 </style>
 </head>
@@ -18,7 +19,19 @@
     <div class="stats"><span id="position">Ready</span><span id="score">Score 0%</span></div>
   </header>
 
-  <section id="profileScreen" class="card setup">
+  <section id="syncScreen" class="card setup hidden">
+    <span class="pill">PMP Practice</span><h1>Sign in to sync</h1>
+    <p class="muted">Use the shared PMP sync login on each device.</p>
+    <div class="syncForm">
+      <input class="field" id="syncEmail" type="email" autocomplete="username" placeholder="Email">
+      <input class="field" id="syncPassword" type="password" autocomplete="current-password" placeholder="Password">
+      <button class="btn primary big" id="syncSignInBtn" type="button">Sign In</button>
+      <button class="btn" id="syncLocalBtn" type="button">Continue on This Device Only</button>
+      <div class="syncStatus" id="syncStatus"></div>
+    </div>
+  </section>
+
+  <section id="profileScreen" class="card setup hidden">
     <span class="pill">PMP Practice</span><h1>Who is practicing?</h1>
     <p class="muted">Each profile keeps its own multiple-choice and drag-and-drop results.</p>
     <div class="setupGrid">
@@ -74,6 +87,8 @@
 
 <script src="data1.js"></script><script src="data2.js"></script><script src="data3.js"></script><script src="data4.js"></script><script src="data5.js"></script><script src="data6.js"></script>
 <script src="mcq1.js"></script><script src="mcq2.js"></script><script src="mcq3.js"></script><script src="mcq4.js"></script><script src="mcq5.js"></script><script src="mcq6.js"></script>
+<script src="firebase-config.js?v=20260819a"></script>
+<script src="pmp-cloud.js?v=20260819a"></script>
 <script>
 const $=id=>document.getElementById(id), esc=s=>String(s).replace(/[&<>\"]/g,c=>c==='&'?'&amp;':c==='<'?'&lt;':c==='>'?'&gt;':'&quot;');
 const DRAG=(window.PMP_QUESTIONS||[]).map(q=>({...q,bank:'drag',uid:'d:'+q.id}));
@@ -82,17 +97,21 @@ const ITEM=new Map([...DRAG,...MCQ].map(q=>[q.uid,q]));
 const NEW_PREFIX='pmpUser_v3_', OLD_PREFIX='pmpProfile_v2_', LEGACY='pmpTranscriptR_v1';
 let ACTIVE=null,P=null,TYPE=null,DOMAIN='all',SESSION=null;
 let R={uid:null,mcqSelected:null,selectedTile:null,placement:{},dragOrder:null,checked:false};
+let CLOUD_UNSUB=null;
 function parse(raw,fallback){try{return raw?JSON.parse(raw):fallback}catch(e){return fallback}}
 function shuffle(a){for(let i=a.length-1;i>0;i--){let j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
 function nonIdentity(a){let orig=a.slice(),x=a.slice();for(let n=0;n<8;n++){shuffle(x);if(x.some((v,i)=>v!==orig[i]))return x}if(x.length>1)x.push(x.shift());return x}
-function defaultProfile(){return {dragResults:{},mcqResults:{},sessions:{}}}
+function defaultProfile(){return {dragResults:{},mcqResults:{},sessions:{},sessionHistory:[]}}
+function normalizeProfile(p){return window.PMP_SYNC?PMP_SYNC.normalizeProfile(p):Object.assign(defaultProfile(),p||{})}
 function pkey(n){return NEW_PREFIX+n.toLowerCase()}
 function migrate(name){if(localStorage.getItem(pkey(name)))return;let p=defaultProfile(),old=parse(localStorage.getItem(OLD_PREFIX+name.toLowerCase()),null);if(old){p.dragResults=old.r||{};let dom=['People','Process','Business Environment'].includes(old.domain)?old.domain:'all',ord=Array.isArray(old.order)?old.order.map(x=>'d:'+x):DRAG.map(x=>x.uid);p.sessions['drag|'+dom]={i:Number.isFinite(old.i)?old.i:0,order:ord,missed:old.mode==='missed',choiceOrders:{}}}else if(name==='Mike'){let legacy=parse(localStorage.getItem(LEGACY),null);if(legacy){p.dragResults=legacy;p.sessions['drag|all']={i:Math.min(Object.keys(legacy).length,DRAG.length-1),order:DRAG.map(x=>x.uid),missed:false,choiceOrders:{}}}}localStorage.setItem(pkey(name),JSON.stringify(p))}
-function loadProfile(name){migrate(name);ACTIVE=name;P=parse(localStorage.getItem(pkey(name)),defaultProfile());P.dragResults=P.dragResults||{};P.mcqResults=P.mcqResults||{};P.sessions=P.sessions||{};saveProfile()}
-function saveProfile(){if(ACTIVE&&P)localStorage.setItem(pkey(ACTIVE),JSON.stringify(P));updateProfileStats()}
-function profileData(name){migrate(name);let p=parse(localStorage.getItem(pkey(name)),defaultProfile());return p}
+async function loadProfile(name){migrate(name);ACTIVE=name;P=normalizeProfile(parse(localStorage.getItem(pkey(name)),defaultProfile()));if(window.PMP_SYNC&&PMP_SYNC.currentUser()){try{P=normalizeProfile(await PMP_SYNC.loadProfile(name,P));localStorage.setItem(pkey(name),JSON.stringify(P));watchActiveProfile()}catch(e){console.warn('Cloud profile load failed',e)}}saveProfile({cloud:false,touch:false})}
+function saveProfile(opts={}){if(ACTIVE&&P){let now=Date.now();if(opts.touch!==false){P.updatedAt=now;if(SESSION)SESSION.updatedAt=now}localStorage.setItem(pkey(ACTIVE),JSON.stringify(P));if(opts.cloud!==false&&window.PMP_SYNC)PMP_SYNC.saveProfile(ACTIVE,P)}updateProfileStats()}
+function profileData(name){migrate(name);let p=normalizeProfile(parse(localStorage.getItem(pkey(name)),defaultProfile()));return p}
 function profileStats(name){let p=profileData(name),d=Object.values(p.dragResults||{}),m=Object.values(p.mcqResults||{}),dc=d.filter(x=>x&&x.correct).length,mc=m.filter(x=>x&&x.correct).length;return {da:d.length,ds:d.length?Math.round(dc/d.length*100):0,ma:m.length,ms:m.length?Math.round(mc/m.length*100):0}}
 function updateProfileStats(){['Mike','Kira'].forEach(n=>{let s=profileStats(n),el=$(n.toLowerCase()+'Stats');if(el)el.textContent=`Drag ${s.da}/110${s.da?' • '+s.ds+'%':''}  |  MCQ ${s.ma}/110${s.ma?' • '+s.ms+'%':''}`})}
+function watchActiveProfile(){if(CLOUD_UNSUB)CLOUD_UNSUB();CLOUD_UNSUB=null;if(!ACTIVE||!window.PMP_SYNC||!PMP_SYNC.currentUser())return;CLOUD_UNSUB=PMP_SYNC.watchProfile(ACTIVE,remote=>{if(!P||!ACTIVE)return;P=normalizeProfile(PMP_SYNC.mergeProfiles(P,remote));localStorage.setItem(pkey(ACTIVE),JSON.stringify(P));updateProfileStats();refreshHeader(!document.getElementById('app').classList.contains('hidden'))})}
+async function refreshCloudProfiles(){if(!window.PMP_SYNC||!PMP_SYNC.currentUser())return;for(const n of ['Mike','Kira']){migrate(n);let local=profileData(n);try{let merged=normalizeProfile(await PMP_SYNC.loadProfile(n,local));localStorage.setItem(pkey(n),JSON.stringify(merged))}catch(e){console.warn('Cloud refresh failed',e)}}updateProfileStats()}
 function resultFor(uid){let [b,id]=uid.split(':');return b==='d'?P.dragResults[id]:P.mcqResults[id]}
 function setResult(uid,correct){let [b,id]=uid.split(':');if(b==='d')P.dragResults[id]={correct,ts:Date.now()};else P.mcqResults[id]={correct,ts:Date.now()};saveProfile()}
 function pool(type=TYPE,domain=DOMAIN){let a=type==='drag'?DRAG:type==='mcq'?MCQ:[...DRAG,...MCQ];return domain==='all'?a:a.filter(q=>q.domain===domain)}
@@ -102,9 +121,9 @@ function activeIds(){ensureSession();let x=SESSION.order.slice();if(SESSION.miss
 function current(){let ids=activeIds();if(!ids.length)return null;SESSION.i=Math.max(0,Math.min(SESSION.i,ids.length-1));return ITEM.get(ids[SESSION.i])}
 function statsForConfig(){let a=pool(),res=a.map(q=>resultFor(q.uid)).filter(Boolean),c=res.filter(x=>x.correct).length;return {total:a.length,answered:res.length,correct:c,score:res.length?Math.round(c/res.length*100):0}}
 function resetRuntime(uid=null,reshuffle=false){if(reshuffle&&SESSION&&R.uid)delete SESSION.choiceOrders[R.uid];R={uid,mcqSelected:null,selectedTile:null,placement:{},dragOrder:null,checked:false}}
-function showOnly(id){['profileScreen','typeScreen','domainScreen','startScreen','app'].forEach(x=>$(x).classList.toggle('hidden',x!==id))}
+function showOnly(id){['syncScreen','profileScreen','typeScreen','domainScreen','startScreen','app'].forEach(x=>$(x).classList.toggle('hidden',x!==id))}
 function headerReady(text='Ready'){$('topUser').textContent=ACTIVE||'Choose a profile';$('topAnswered').textContent='';$('position').textContent=text;$('score').textContent='Score 0%';$('progressBar').style.width='0%'}
-function showProfiles(){if(P)saveProfile();ACTIVE=null;P=null;TYPE=null;DOMAIN='all';SESSION=null;showOnly('profileScreen');headerReady('Ready');updateProfileStats()}
+function showProfiles(){if(P)saveProfile();if(CLOUD_UNSUB)CLOUD_UNSUB();CLOUD_UNSUB=null;ACTIVE=null;P=null;TYPE=null;DOMAIN='all';SESSION=null;showOnly('profileScreen');headerReady('Ready');updateProfileStats()}
 function showTypes(){showOnly('typeScreen');$('typeProfile').textContent='Profile: '+ACTIVE;headerReady('Choose question type')}
 function typeLabel(t){return t==='mcq'?'Multiple Choice':t==='drag'?'Drag & Drop':'Combination'}
 function showDomains(){showOnly('domainScreen');$('domainProfile').textContent='Profile: '+ACTIVE;$('domainTypeText').textContent=typeLabel(TYPE);let domains=['all','People','Process','Business Environment'];$('domainChoices').innerHTML=domains.map(d=>{let n=pool(TYPE,d).length,label=d==='all'?'All Domains':d;return `<button class="btn setupChoice domainBtn" data-domain="${esc(d)}">${esc(label)}<small>${n} question${n===1?'':'s'}</small></button>`}).join('');document.querySelectorAll('.domainBtn').forEach(b=>b.onclick=()=>{DOMAIN=b.dataset.domain;showStart()});headerReady('Choose domain')}
@@ -131,11 +150,18 @@ function resetQuestion(){let q=current();if(q){delete SESSION.choiceOrders[q.uid
 function shuffleQuestions(){SESSION.order=shuffle(SESSION.order.slice());SESSION.i=0;resetRuntime();saveProfile();renderCurrent()}
 function toggleMissed(){SESSION.missed=!SESSION.missed;SESSION.i=0;resetRuntime();saveProfile();renderCurrent()}
 
-document.querySelectorAll('.profileBtn').forEach(b=>b.onclick=()=>{loadProfile(b.dataset.profile);showTypes()});
+document.querySelectorAll('.profileBtn').forEach(b=>b.onclick=async()=>{await loadProfile(b.dataset.profile);showTypes()});
 document.querySelectorAll('.typeBtn').forEach(b=>b.onclick=()=>{TYPE=b.dataset.type;DOMAIN='all';showDomains()});
 $('typeBack').onclick=showProfiles;$('domainBack').onclick=showTypes;$('startBack').onclick=showDomains;$('startBtn').onclick=startPractice;
 $('checkBtn').onclick=checkAnswer;$('resetBtn').onclick=resetQuestion;$('prevBtn').onclick=()=>navigate(-1);$('nextBtn').onclick=()=>navigate(1);$('shuffleBtn').onclick=shuffleQuestions;$('missedBtn').onclick=toggleMissed;$('setupBtn').onclick=showTypes;$('switchBtn').onclick=showProfiles;
-updateProfileStats();showProfiles();
+function setSyncStatus(text,kind=''){let el=$('syncStatus');el.textContent=text;el.className='syncStatus '+kind}
+function showSync(text=''){showOnly('syncScreen');headerReady('Sync sign in');$('syncEmail').value=localStorage.getItem('pmpSyncEmail')||'';$('syncPassword').value='';setSyncStatus(text)}
+async function syncSignIn(){let email=$('syncEmail').value.trim(),password=$('syncPassword').value;if(!email||!password){setSyncStatus('Enter the shared sync email and password.','bad');return}$('syncSignInBtn').disabled=true;setSyncStatus('Signing in...');try{await PMP_SYNC.signIn(email,password);localStorage.setItem('pmpSyncEmail',email);await refreshCloudProfiles();setSyncStatus('Cloud sync is on.','ok');showProfiles()}catch(e){setSyncStatus('Sign-in failed. Check the Firebase email/password setup.','bad')}finally{$('syncSignInBtn').disabled=false;$('syncPassword').value=''}}
+async function bootApp(){updateProfileStats();if(window.PMP_SYNC&&PMP_SYNC.isConfigured()){showSync('Checking sync...');try{await PMP_SYNC.init();let user=await PMP_SYNC.readyUser();if(user){await refreshCloudProfiles();showProfiles()}else showSync()}catch(e){console.warn('Cloud init failed',e);showSync('Cloud sync could not start. You can continue locally for now.')}}else showSync('Cloud sync is not configured yet. Continue locally or add Firebase settings.')}
+$('syncSignInBtn').onclick=syncSignIn;$('syncLocalBtn').onclick=showProfiles;
+bootApp();
+if('serviceWorker' in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js?v=20260819a').catch(()=>{}));
 </script>
-<script src="timed-session.js?v=20260818b"></script>
+<script src="timed-session.js?v=20260819a"></script>
+<script src="ui-header-v17.js?v=20260819a"></script>
 </body></html>
