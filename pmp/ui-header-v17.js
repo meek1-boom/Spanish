@@ -3,7 +3,7 @@
     const header=document.querySelector('.top');
     if(!header)return;
 
-    const setupIds=['profileScreen','typeScreen','domainScreen'];
+    const setupIds=['syncScreen','profileScreen','typeScreen','domainScreen'];
     function setupScreenVisible(){
       return setupIds.some(id=>{
         const el=document.getElementById(id);
@@ -13,7 +13,7 @@
     function syncHeader(){
       header.style.display=setupScreenVisible()?'none':'';
       const footer=document.querySelector('.appVersionFooter');
-      if(footer)footer.textContent='PMP Practice v1.8';
+      if(footer)footer.textContent='PMP Practice v1.9';
     }
 
     const observer=new MutationObserver(syncHeader);
