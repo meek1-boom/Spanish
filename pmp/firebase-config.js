@@ -6,5 +6,6 @@ window.PMP_FIREBASE_CONFIG = {
   projectId: "pmp1-c61c5",
   storageBucket: "pmp1-c61c5.firebasestorage.app",
   messagingSenderId: "449722983970",
-  appId: "1:449722983970:web:b4742e59c9675bc6db8c7b"
+  appId: "1:449722983970:web:b4742e59c9675bc6db8c7b",
+  syncEmail: "pmp-sync@pmp.local"
 };
