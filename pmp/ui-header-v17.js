@@ -61,6 +61,6 @@
     syncHeader();
   }
 
-  if(document.readyState==='complete')install();
-  else window.addEventListener('load',install,{once:true});
+  if(document.querySelector('.top'))install();
+  else document.addEventListener('DOMContentLoaded',install,{once:true});
 })();
