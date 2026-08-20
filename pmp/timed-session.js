@@ -7,7 +7,7 @@
     }
     window.__pmpTimedSessionInstalled=true;
 
-    const APP_VERSION='v1.6';
+    const APP_VERSION='v1.9';
     const COUNTS=[3,5,10,15,20,40,60,80,100];
     let selectedCount=null;
     let timedActive=false;
